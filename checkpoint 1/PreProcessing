@@ -1,0 +1,72 @@
+import pandas as pd
+import re
+from nltk.corpus import stopwords
+import nltk
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+file_path = '/Users/amitamodi/Downloads/fakeReviewData.csv'
+data = pd.read_csv(file_path)
+print("\nDataset Preview:")
+print(data.head())
+
+print("\nDataset structure:")
+print(data.info())
+
+print("\nBlank entries in each column:")
+print(data.isnull().sum()) #for blank entries
+
+print("\nColumn names:")
+print(data.columns)
+
+print("\nDataset shape (rows, columns):")
+print(data.shape)
+
+#Task 2:Data Cleaning 
+missing_values = data.isnull().sum()
+
+data_cleaned = data.dropna()
+
+data_cleaned = data_cleaned.drop_duplicates()
+
+data_cleaned['text_'] = data_cleaned['text_'].str.strip()
+
+#Task 3:Text Normalization
+data_cleaned['text_'] = data_cleaned['text_'].apply(lambda x: re.sub(r'[^\w\s]', '', x.lower()))
+data_cleaned['text_'] = data_cleaned['text_'].apply(lambda x: re.sub(r'\d+', '', x))
+
+#Task 4:Tokenization
+data_cleaned['tokens'] = data_cleaned['text_'].apply(lambda x: x.split())
+
+#Task 5:Removal of Stop Words
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+data_cleaned['tokens'] = data_cleaned['tokens'].apply(
+    lambda tokens: [word for word in tokens if word not in stop_words]
+)
+
+#Task 6:Stemming or Lemmatization
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+def apply_stemming(tokens):
+    return [stemmer.stem(word) for word in tokens]
+
+def apply_lemmatization(tokens):
+    return [lemmatizer.lemmatize(word) for word in tokens]
+
+#can change this to apply_lemmatization if you want to use lemmatization
+data_cleaned['tokens'] = data_cleaned['tokens'].apply(apply_stemming)
+
+#Task 7: TF-IDF representation
+tfidf_vectorizer = TfidfVectorizer()
+X_tfidf = tfidf_vectorizer.fit_transform(data_cleaned['text_'])
+tfidf_vectorized_file_path = '/Users/amitamodi/Downloads/fakeReviewData_tfidf.csv'
+tfidf_df = pd.DataFrame(X_tfidf.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
+tfidf_df.to_csv(tfidf_vectorized_file_path, index=False)
+print(f"TF-IDF vectorized data saved to: {tfidf_vectorized_file_path}")
+
