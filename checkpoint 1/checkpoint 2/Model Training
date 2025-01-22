@@ -1,0 +1,19 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+file_path = '/Users/amitamodi/Downloads/fakeReviewData_tfidf.csv'
+data = pd.read_csv(file_path)
+
+print(data.head())
+print(data.shape)
+print(data.info())
+
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print("Training Set Shape:", X_train.shape, y_train.shape)
+print("Testing Set Shape:", X_test.shape, y_test.shape)
+
+  
