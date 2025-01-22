@@ -37,12 +37,12 @@ data_cleaned['text_'] = data_cleaned['text_'].apply(lambda x: re.sub(r'[^\w\s]',
 data_cleaned['text_'] = data_cleaned['text_'].apply(lambda x: re.sub(r'\d+', '', x))
 
 #Task 4:Tokenization
-data_cleaned['tokens'] = data_cleaned['text_'].apply(lambda x: x.split())
+data_cleaned['text_'] = data_cleaned['text_'].apply(lambda x: x.split())
 
 #Task 5:Removal of Stop Words
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
-data_cleaned['tokens'] = data_cleaned['tokens'].apply(
+data_cleaned['text_'] = data_cleaned['text_'].apply(
     lambda tokens: [word for word in tokens if word not in stop_words]
 )
 
@@ -60,7 +60,7 @@ def apply_lemmatization(tokens):
     return [lemmatizer.lemmatize(word) for word in tokens]
 
 #can change this to apply_lemmatization if you want to use lemmatization
-data_cleaned['tokens'] = data_cleaned['tokens'].apply(apply_stemming)
+data_cleaned['text_'] = data_cleaned['text_'].apply(apply_stemming)
 
 #Task 7: TF-IDF representation
 tfidf_vectorizer = TfidfVectorizer()
